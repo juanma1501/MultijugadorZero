@@ -117,9 +117,8 @@ class Server(Ice.Application):
             logging.debug('Initializing server...')
             servant = AuthenticationI()
             signal.signal(signal.SIGUSR1, servant.refresh)
-
-            adapter = communicator.createObjectAdapter('AuthenticationAdapter')
-            proxy = adapter.add(servant, self.communicator().stringToIdentity('default'))
+            adapter = communicator.createObjectAdapterWithEndpoints("AuthenticationAdapter", "default -h localhost -p 10000")
+            proxy = adapter.add(servant, self.communicator().stringToIdentity('authentication'))
             adapter.addDefaultServant(servant, '')
             adapter.activate()
             logging.debug('Adapter ready, servant proxy: {}'.format(proxy))
