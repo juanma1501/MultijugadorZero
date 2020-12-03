@@ -26,6 +26,9 @@ with Ice.initialize(sys.argv) as communicator:
     print("Introduce la contraseña nueva")
     psw_nueva = getpass()
     psw_nueva = hashlib.sha224(psw_nueva.encode()).hexdigest()
-
-    proxy_auth.changePassword(str(usuario), psw_antigua, psw_nueva)
-    print("La contraseña se ha cambiado con éxito.")
+    
+    try:
+        proxy_auth.changePassword(str(usuario), psw_antigua, psw_nueva)
+        print("La contraseña se ha cambiado con éxito.")
+    except IceGauntlet.Unauthorized:
+        print("ERROR. Usuario o contraseña incorrectos.")
