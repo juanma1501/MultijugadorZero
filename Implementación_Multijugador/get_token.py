@@ -8,11 +8,11 @@ import IceGauntlet
 
 if len(sys.argv) < 2:
     print("Hay que introducir el proxy")
+    sys.exit(0)
 
 with Ice.initialize(sys.argv) as communicator:
 
-    print("Introduce tu nombre de usuario: ")
-    user = input()
+    user = input("Introduce tu nombre de usuario: ")
 
     password = getpass()
     password = hashlib.sha224(password.encode()).hexdigest()
