@@ -18,6 +18,10 @@ with Ice.initialize(sys.argv) as communicator:
     password = hashlib.sha224(password.encode()).hexdigest()
 
     auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
+    try:
+        tkn = auth.getNewToken(user, password)
+    except IceGauntlet.Unauthorized:
+        print("El usuario o la contraseña introducidos son incorrectos.")
+        sys.exit(0)
 
-    tkn = auth.getNewToken(user, password)
     print("El token es : " + str(tkn))
