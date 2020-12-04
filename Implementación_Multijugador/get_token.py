@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import Ice
 import sys
 import hashlib
@@ -9,7 +8,6 @@ import IceGauntlet
 
 if len(sys.argv) < 2:
     print("Hay que introducir el proxy")
-
 
 with Ice.initialize(sys.argv) as communicator:
 
