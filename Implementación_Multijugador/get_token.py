@@ -16,8 +16,12 @@ with Ice.initialize(sys.argv) as communicator:
 
     password = getpass()
     password = hashlib.sha224(password.encode()).hexdigest()
+    try:
+        auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
+    except Ice.NoEndpointException:
+        print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+        sys.exit(0)
 
-    auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
     try:
         tkn = auth.getNewToken(user, password)
     except IceGauntlet.Unauthorized:

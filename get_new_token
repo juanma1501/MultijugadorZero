@@ -15,8 +15,11 @@ except ImportError:
     print('Required library "pexpect" not exists. Install with pip and try again')
     sys.exit(1)
 
+#Nuestro cliente está en este directorio, así que usamos esta función para meternos en él
+os.chdir("./Implementación_Multijugador")
+
 # Define command to request new token
-_COMMAND_ = 'cd Implementación_Multijugador && python3 get_token.py "%(auth_proxy)s"'
+_COMMAND_ = 'python3 get_token.py "%(auth_proxy)s"'
 
 # Message used by authentication client when asking for a password
 _PASSWORD_MESSAGE_ = 'Password:'
@@ -45,8 +48,6 @@ found = proc.expect(
 if found == 0:
     # Enter password
     proc.sendline(user)
-    # Wait end
-    #proc.expect([pexpect.EOF])
 else:
     # Client execution failed
     print('ERROR: authentication command does not ask for password after {} seconds'.format(
