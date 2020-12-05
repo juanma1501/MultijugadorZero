@@ -22,7 +22,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
                 self.maps.append(json.loads(room_json))
                 print(self.maps)
         else:
-            print("ERROR. El token introducido no es correcto.")
+            raise IceGauntlet.Unauthorized()
 
     def remove(self, tkn, room_name, current=None):
         if self.auth_server.isValid(tkn):
@@ -35,7 +35,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
             else:
                 raise IceGauntlet.RoomNotExists()
         else:
-            print("ERROR. El token introducido no es correcto.")
+            raise IceGauntlet.Unauthorized()
 
     def getRoom(self, current=None):
         return json.dumps(self.maps)
