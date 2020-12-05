@@ -12,14 +12,25 @@ if len(sys.argv) < 4:
 
 with Ice.initialize(sys.argv) as communicator:
 
-    with open('Maps/' + sys.argv[3]) as json_file:
-        mapa = json.load(json_file)
-
     try:
         proxy_maps_server = IceGauntlet.RoomManagerPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
     except Ice.NoEndpointException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
         sys.exit(0)
+    except Ice.ConnectionRefusedException:
+        print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+        sys.exit(0)
+    except Ice.EndpointParseException:
+        print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+        sys.exit(0)
+
+    try:
+        with open('Maps/' + sys.argv[3]) as json_file:
+            mapa = json.load(json_file)
+    except FileNotFoundError:
+        print("ERROR. No se pudo encontrar el archivo .json")
+        sys.exit(0)
+
     try:
         proxy_maps_server.publish(sys.argv[2], json.dumps(mapa))
     except IceGauntlet.Unauthorized:

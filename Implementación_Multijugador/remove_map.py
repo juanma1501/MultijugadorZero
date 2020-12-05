@@ -15,6 +15,13 @@ with Ice.initialize(sys.argv) as communicator:
     except Ice.NoEndpointException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
         sys.exit(0)
+    except Ice.ConnectionRefusedException:
+        print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+        sys.exit(0)
+    except Ice.EndpointParseException:
+        print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+        sys.exit(0)
+
     try:
         proxy_maps_server.remove(sys.argv[2], sys.argv[3])
     except IceGauntlet.Unauthorized:
