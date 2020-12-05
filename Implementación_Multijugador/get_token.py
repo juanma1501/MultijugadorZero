@@ -27,7 +27,7 @@ with Ice.initialize(sys.argv) as communicator:
     user = input("Introduce tu nombre de usuario: ")
 
     password = getpass()
-    password = hashlib.sha224(password.encode()).hexdigest()
+    password = hashlib.sha256(password.encode()).hexdigest()
 
 
     try:

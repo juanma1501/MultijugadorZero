@@ -21,11 +21,11 @@ with Ice.initialize(sys.argv) as communicator:
 
     print("Introduce la antigua contraseña:")
     psw_antigua = getpass()
-    psw_antigua = hashlib.sha224(psw_antigua.encode()).hexdigest()
+    psw_antigua = hashlib.sha256(psw_antigua.encode()).hexdigest()
 
     print("Introduce la contraseña nueva")
     psw_nueva = getpass()
-    psw_nueva = hashlib.sha224(psw_nueva.encode()).hexdigest()
+    psw_nueva = hashlib.sha256(psw_nueva.encode()).hexdigest()
     
     try:
         proxy_auth.changePassword(str(usuario), psw_antigua, psw_nueva)
