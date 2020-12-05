@@ -28,10 +28,12 @@ class RoomManagerI(IceGauntlet.RoomManager):
         if self.auth_server.isValid(tkn):
             if self.exist(room_name):
                 for map in self.maps:
-                    if map['room'] and map['room'] == room_name:
-                        self.maps.remove(map)
-                        print(self.maps)
-                    #wrong format exception
+                    if map['room']:
+                        if map['room'] == room_name:
+                            self.maps.remove(map)
+                            print(self.maps)
+                    else:
+                        raise IceGauntlet.WrongRoomFormat()
             else:
                 raise IceGauntlet.RoomNotExists()
         else:
