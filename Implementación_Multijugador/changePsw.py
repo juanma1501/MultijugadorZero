@@ -11,7 +11,7 @@ import IceGauntlet
 
 if len(sys.argv) < 2:
     print("Introduce el proxy por parámetro.")
-    sys.exit(0)  
+    sys.exit(1)
 
 with Ice.initialize(sys.argv) as communicator:
     proxy_auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))

@@ -14,21 +14,21 @@ with Ice.initialize(sys.argv) as communicator:
         proxy_maps_server = IceGauntlet.RoomManagerPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
     except Ice.NoEndpointException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
     except Ice.ConnectionRefusedException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
     except Ice.EndpointParseException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
 
     try:
         proxy_maps_server.remove(sys.argv[2], sys.argv[3])
     except IceGauntlet.Unauthorized:
         print("El token introducido es incorrecto.")
-        sys.exit(0)
+        sys.exit(1)
     except IceGauntlet.RoomNotExists:
         print("El mapa que intentas borrar no existe.")
-        sys.exit(0)
+        sys.exit(1)
 
     print('El mapa se ha borrado con éxito.')

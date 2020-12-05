@@ -8,7 +8,7 @@ import IceGauntlet
 
 if len(sys.argv) < 2:
     print("Hay que introducir el proxy")
-    sys.exit(0)
+    sys.exit(1)
 
 with Ice.initialize(sys.argv) as communicator:
 
@@ -16,13 +16,13 @@ with Ice.initialize(sys.argv) as communicator:
         auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
     except Ice.NoEndpointException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
     except Ice.ConnectionRefusedException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
     except Ice.EndpointParseException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
 
     user = input("Introduce tu nombre de usuario: ")
 
@@ -34,6 +34,6 @@ with Ice.initialize(sys.argv) as communicator:
         tkn = auth.getNewToken(user, password)
     except IceGauntlet.Unauthorized:
         print("El usuario o la contraseña introducidos son incorrectos.")
-        sys.exit(0)
+        sys.exit(1)
 
     print("El token es : " + str(tkn))

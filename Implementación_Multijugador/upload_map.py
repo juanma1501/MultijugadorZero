@@ -16,13 +16,13 @@ with Ice.initialize(sys.argv) as communicator:
         proxy_maps_server = IceGauntlet.RoomManagerPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
     except Ice.NoEndpointException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
     except Ice.ConnectionRefusedException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
     except Ice.EndpointParseException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
-        sys.exit(0)
+        sys.exit(1)
 
     try:
         with open('Maps/' + sys.argv[3]) as json_file:
@@ -35,7 +35,7 @@ with Ice.initialize(sys.argv) as communicator:
         proxy_maps_server.publish(sys.argv[2], json.dumps(mapa))
     except IceGauntlet.Unauthorized:
         print("El token introducido es incorrecto.")
-        sys.exit(0)
+        sys.exit(1)
     except IceGauntlet.WrongRoomFormat:
         print("El formato del JSON no es valido")
 
