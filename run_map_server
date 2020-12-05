@@ -21,8 +21,6 @@ os.chdir("./Implementación_Multijugador")
 # Define command to request new token
 _COMMAND_ = 'python3 maps_server.py "%(auth_proxy)s"'
 
-# Message used by authentication client when asking for a password
-_TIMEOUT_FOR_MESSAGE_ = 15
 
 # Get required arguments
 try:
@@ -43,7 +41,8 @@ proc = pexpect.spawn(final_command, echo=False)
 print (proc.readline().decode())
 
 try:
-    proc.expect([pexpect.EOF])
+    proc.expect([pexpect.EOF], timeout=None)
 except KeyboardInterrupt:
     print()
+
 
