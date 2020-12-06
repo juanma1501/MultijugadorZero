@@ -47,6 +47,7 @@ with Ice.initialize(sys.argv) as communicator:
         print("El mapa que intenta publicar ya existe.")
         sys.exit(1)
     except IceGauntlet.WrongRoomFormat:
-        print("El formato del JSON no es valido")
+        print("El formato del JSON no es valido, revisa los campos room y data")
+        sys.exit(1)
 
     print("El mapa se ha subido con éxito.")

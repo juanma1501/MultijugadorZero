@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#argumentos <proxy_servicios_juego>
+
+if [ $# -ne 1 ]; then
+	echo "ERROR. Introduce 1 parametro <proxy_servicios_juego>"
+	exit 1
+fi
+
+cd ./Juego
+python3 game_client.py  "$@"

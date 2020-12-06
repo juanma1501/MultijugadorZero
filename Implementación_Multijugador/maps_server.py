@@ -22,20 +22,28 @@ class RoomManagerI(IceGauntlet.RoomManager):
     # pylint: disable=W0613
     def publish(self, tkn, room_json, current=None):
         number = 0
-        if self.auth_server.isValid(tkn):
-            if json.loads(room_json) in self.maps:
-                raise IceGauntlet.RoomAlreadyExists()
+        json_map = json.loads(room_json)
+        if self.check(json_map):
+            if self.auth_server.isValid(tkn):
+                if json_map in self.maps:
+                    raise IceGauntlet.RoomAlreadyExists()
+                else:
+                    self.maps.append(json_map)  # Lo metemos en la lista
+                    # Lo incluimos en la carpeta Loaded_Maps
+                    # pylint: disable=W0612
+                    for i in os.listdir("./Loaded_Maps"):
+                        number += 1
+                    with open('./Loaded_Maps/' + str(number) + '.json', 'w') as file:
+                        json.dump(json_map, file)
             else:
-                self.maps.append(json.loads(room_json))  # Lo metemos en la lista
-                # Lo incluimos en la carpeta Loaded_Maps
-                # pylint: disable=W0612
-                for i in os.listdir("./Loaded_Maps"):
-                    number += 1
-                with open('./Loaded_Maps/' + str(number) + '.json', 'w') as file:
-                    json.dump(json.loads(room_json), file)
-                print(self.maps)
+                raise IceGauntlet.Unauthorized()
         else:
-            raise IceGauntlet.Unauthorized()
+            raise IceGauntlet.WrongRoomFormat()
+
+    def check(self, json_map):
+        if 'data' in json_map and 'room' in json_map:
+            return True
+        return False
 
     # pylint: disable=W0613
     # pylint: disable=C0116
@@ -44,14 +52,10 @@ class RoomManagerI(IceGauntlet.RoomManager):
         if self.auth_server.isValid(tkn):
             if self.exist(room_name):
                 for map in self.maps:
-                    if map['room']:
-                        if map['room'] == room_name:
-                            self.maps.remove(map)
-                            os.remove('./Loaded_Maps/' + str(i) + '.json')
-                            self.rename()
-                            print(self.maps)
-                    else:
-                        raise IceGauntlet.WrongRoomFormat()
+                    if map['room'] == room_name:
+                        self.maps.remove(map)
+                        os.remove('./Loaded_Maps/' + str(i) + '.json')
+                        self.rename()
                     i += 1
             else:
                 raise IceGauntlet.RoomNotExists()
@@ -130,7 +134,7 @@ class Server(Ice.Application):
             adapter_game.activate()
 
             # Vamos a escribir el proxy de juego en el txt, ya que este servidor solo puede imprimir uno
-            txt = open('proxy_juego', 'w')
+            txt = open('proxy_juego.txt', 'w')
             txt.write(str(proxy_game))
             txt.close()
 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#argumentos <proxy_servicios_mapa> <token> <nombre_mapa>
+
+if [ $# -ne 3 ]; then
+	echo "ERROR. Introduce 3 parametros <proxy_servicios_mapa> <token> <nombre_mapa>"
+	exit 1
+fi
+
+cd ./Implementación_Multijugador/
+python3 remove_map.py  "$@"

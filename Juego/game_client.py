@@ -62,22 +62,22 @@ def main():
     print(proxy_juego)
     f.close()
     '''
-
-    game.pyxeltools.initialize()
-    communicator = Ice.initialize(sys.argv)
-    game_ = IceGauntlet.DungeonPrx.checkedCast(communicator.stringToProxy(user_options.PROXY))
-    try:
-        dungeon = RemoteDungeon(game_)
-    except IceGauntlet.RoomNotExists:
-        print("ERROR. No hay mapas subidos para jugar.")
-        sys.exit(1)
-    gauntlet = game.Game(user_options.hero, dungeon)
-    gauntlet.add_state(game.screens.TileScreen, game.common.INITIAL_SCREEN)
-    gauntlet.add_state(game.screens.StatsScreen, game.common.STATUS_SCREEN)
-    gauntlet.add_state(game.screens.GameScreen, game.common.GAME_SCREEN)
-    gauntlet.add_state(game.screens.GameOverScreen, game.common.GAME_OVER_SCREEN)
-    gauntlet.add_state(game.screens.GoodEndScreen, game.common.GOOD_END_SCREEN)
-    gauntlet.start()
+    while(True):
+        game.pyxeltools.initialize()
+        communicator = Ice.initialize(sys.argv)
+        game_ = IceGauntlet.DungeonPrx.checkedCast(communicator.stringToProxy(user_options.PROXY))
+        try:
+            dungeon = RemoteDungeon(game_)
+        except IceGauntlet.RoomNotExists:
+            print("ERROR. No hay mapas subidos para jugar.")
+            sys.exit(1)
+        gauntlet = game.Game(user_options.hero, dungeon)
+        gauntlet.add_state(game.screens.TileScreen, game.common.INITIAL_SCREEN)
+        gauntlet.add_state(game.screens.StatsScreen, game.common.STATUS_SCREEN)
+        gauntlet.add_state(game.screens.GameScreen, game.common.GAME_SCREEN)
+        gauntlet.add_state(game.screens.GameOverScreen, game.common.GAME_OVER_SCREEN)
+        gauntlet.add_state(game.screens.GoodEndScreen, game.common.GOOD_END_SCREEN)
+        gauntlet.start()
 
     return EXIT_OK
 

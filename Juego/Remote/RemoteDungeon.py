@@ -25,7 +25,11 @@ class RemoteDungeon:
     # pylint: disable=C0116
     def next_room(self):
         if self._levels_:
-            return self._levels_.pop()
+            # Hacemos esta modificación para seguir jugando el juego infinitamente, y añadir el mapa
+            # jugado al final de la lista
+            map = self._levels_.pop()
+            self._levels_.insert(0, map)
+            return map
 
     @property
     # Error de pylint por docstring

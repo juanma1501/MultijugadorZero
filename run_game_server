@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#En este script lo que hacemos es leer el proxy de juego desde el archivo proxy_juego.txt del directorio Implementación_Multijugador, si queremos pararlo tendremos que hacer Ctrl C en el servidor de mapas, ya que los se emiten a la vez.
+
+cd ./Implementación_Multijugador
+
+if [ $# -ne 0 ]; then
+	echo "ERROR. No se admiten argumentos"
+	exit 1
+fi
+
+backIFS=$IFS
+while IFS='' read -r linea || [[ -n "$linea" ]]; do
+	echo -e $linea
+done < proxy_juego.txt
+IFS=$backIFS
