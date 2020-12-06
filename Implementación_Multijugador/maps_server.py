@@ -96,8 +96,11 @@ class DungeonI(IceGauntlet.Dungeon):
     def __init__(self, maps):
         self.maps = maps
 
+
     # pylint: disable=W0613
     def getRoom(self, current=None):
+        if len(self.maps) == 0:
+            raise IceGauntlet.RoomNotExists
         return json.dumps(self.maps)
 
 
