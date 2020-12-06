@@ -12,8 +12,8 @@ module IceGauntlet {
   };
   
   interface RoomManager {
-    void publish(string token, string roomData) throws Unauthorized;
-    void remove(string token, string roomName) throws Unauthorized;
+    void publish(string token, string roomData) throws Unauthorized, RoomAlreadyExists, WrongRoomFormat;
+    void remove(string token, string roomName) throws Unauthorized, RoomNotExists;
   };
   
   interface Dungeon {

@@ -6,8 +6,7 @@ Script to run authentication user
 
 import os
 import sys
-
-import proc as proc
+# Si falla importar esto --> import proc as proc
 
 try:
     import pexpect
@@ -43,6 +42,8 @@ final_command = _COMMAND_ % {
 proc = pexpect.spawn(final_command, echo=False)
 
 found = proc.expect(
+    #Quitamos el error de pylint porque no podemos evitar que sea tan larga la sentencia
+    # pylint: disable=C0301
     ["Introduce tu nombre de usuario: ", pexpect.TIMEOUT, pexpect.EOF], timeout=_TIMEOUT_FOR_MESSAGE_
 )
 if found == 0:

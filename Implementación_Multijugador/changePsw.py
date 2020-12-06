@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-import Ice
 import hashlib
 import sys
 from getpass import getpass
+import Ice
 Ice.loadSlice('icegauntlet.ice')
+# pylint: disable=E0401
+# pylint: disable=C0413
 import IceGauntlet
 
 #Recibiremos por parámetro un proxy, y pediremos usuario y contraseña por teclado
@@ -20,15 +22,14 @@ with Ice.initialize(sys.argv) as communicator:
     usuario = input()  #Existe el usuario?
 
     print("Introduce la antigua contraseña:")
-    psw_antigua = getpass()
-    psw_antigua = hashlib.sha256(psw_antigua.encode()).hexdigest()
+    PSW_ANTIGUA = getpass()
+    PSW_ANTIGUA = hashlib.sha256(PSW_ANTIGUA.encode()).hexdigest()
 
     print("Introduce la contraseña nueva")
-    psw_nueva = getpass()
-    psw_nueva = hashlib.sha256(psw_nueva.encode()).hexdigest()
-    
+    PSW_NUEVA = getpass()
+    PSW_NUEVA = hashlib.sha256(PSW_NUEVA.encode()).hexdigest()
     try:
-        proxy_auth.changePassword(str(usuario), psw_antigua, psw_nueva)
+        proxy_auth.changePassword(str(usuario), PSW_ANTIGUA, PSW_NUEVA)
         print("La contraseña se ha cambiado con éxito.")
     except IceGauntlet.Unauthorized:
         print("ERROR. Usuario o contraseña incorrectos.")

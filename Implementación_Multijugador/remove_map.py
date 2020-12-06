@@ -1,9 +1,14 @@
 #!/usr/bin/env python
+'''
+Clase remove_map.py
+'''
 
+# pylint: disable=E1101
 import sys
 import Ice
-
 Ice.loadSlice('icegauntlet.ice')
+# pylint: disable=E0401
+# pylint: disable=C0413
 import IceGauntlet
 
 if len(sys.argv) < 4:
@@ -11,6 +16,7 @@ if len(sys.argv) < 4:
 
 with Ice.initialize(sys.argv) as communicator:
     try:
+        # pylint: disable=C0301
         proxy_maps_server = IceGauntlet.RoomManagerPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
     except Ice.NoEndpointException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")

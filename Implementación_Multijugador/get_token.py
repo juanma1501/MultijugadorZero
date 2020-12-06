@@ -1,9 +1,14 @@
 #!/usr/bin/env python
-import Ice
+"""Clase get_token"""
+
+# pylint: disable=E1101
 import sys
 import hashlib
 from getpass import getpass
+import Ice
 Ice.loadSlice('icegauntlet.ice')
+# pylint: disable=E0401
+# pylint: disable=C0413
 import IceGauntlet
 
 if len(sys.argv) < 2:
@@ -26,12 +31,12 @@ with Ice.initialize(sys.argv) as communicator:
 
     user = input("Introduce tu nombre de usuario: ")
 
-    password = getpass()
-    password = hashlib.sha256(password.encode()).hexdigest()
+    PASSWORD = getpass()
+    PASSWORD = hashlib.sha256(PASSWORD.encode()).hexdigest()
 
 
     try:
-        tkn = auth.getNewToken(user, password)
+        tkn = auth.getNewToken(user, PASSWORD)
     except IceGauntlet.Unauthorized:
         print("El usuario o la contraseña introducidos son incorrectos.")
         sys.exit(1)

@@ -4,9 +4,9 @@
 # pylint: disable=W1203
 # pylint: disable=W0613
 
-'''
+"""
    ICE Gauntlet Token Server
-'''
+"""
 
 import sys
 import json
@@ -17,11 +17,11 @@ import logging
 import os.path
 
 import Ice
+
 Ice.loadSlice('icegauntlet.ice')
 # pylint: disable=E0401
 # pylint: disable=C0413
 import IceGauntlet
-
 
 USERS_FILE = 'users.json'
 PASSWORD_HASH = 'password_hash'
@@ -35,7 +35,8 @@ def _build_token_():
 
 
 class AuthenticationI(IceGauntlet.Authentication):
-    '''Authentication servant'''
+    """Authentication servant"""
+
     def __init__(self):
         self._users_ = {}
         self._active_tokens_ = set()
@@ -45,7 +46,7 @@ class AuthenticationI(IceGauntlet.Authentication):
             self.__commit__()
 
     def refresh(self, *args, **kwargs):
-        '''Reload user DB to RAM'''
+        """Reload user DB to RAM"""
         logging.debug('Reloading user database')
         with open(USERS_FILE, 'r') as contents:
             self._users_ = json.load(contents)
@@ -58,7 +59,7 @@ class AuthenticationI(IceGauntlet.Authentication):
         with open(USERS_FILE, 'w') as contents:
             json.dump(self._users_, contents, indent=4, sort_keys=True)
 
-    def changePassword(self, user, currentPassHash, newPassHash, current=None):
+    def changePassword(self, user, current_pass_hash, new_pass_hash, current=None):
         '''Set/Change user password'''
         logging.debug(f'Change password requested by {user}')
         if user not in self._users_:
@@ -68,12 +69,12 @@ class AuthenticationI(IceGauntlet.Authentication):
             # User auth is empty
             self._users_[user][CURRENT_TOKEN] = _build_token_()
         else:
-            if current_hash != currentPassHash:
+            if current_hash != current_pass_hash:
                 raise IceGauntlet.Unauthorized()
-        self._users_[user][PASSWORD_HASH] = newPassHash
+        self._users_[user][PASSWORD_HASH] = new_pass_hash
         self.__commit__()
 
-    def getNewToken(self, user, passwordHash, current=None):
+    def getNewToken(self, user, password_hash, current=None):
         '''Create new auth token'''
         logging.debug(f'New token requested by {user}')
         if user not in self._users_:
@@ -82,7 +83,7 @@ class AuthenticationI(IceGauntlet.Authentication):
         if not current_hash:
             # User auth is empty
             raise IceGauntlet.Unauthorized()
-        if current_hash != passwordHash:
+        if current_hash != password_hash:
             raise IceGauntlet.Unauthorized()
 
         current_token = self._users_[user].get(CURRENT_TOKEN, None)
@@ -109,6 +110,7 @@ class Server(Ice.Application):
     '''
     Authentication Server
     '''
+
     def run(self, args):
         '''
         Server loop
@@ -117,7 +119,8 @@ class Server(Ice.Application):
             logging.debug('Initializing server...')
             servant = AuthenticationI()
             signal.signal(signal.SIGUSR1, servant.refresh)
-            adapter = communicator.createObjectAdapterWithEndpoints("AuthenticationAdapter", "default -h localhost -p 10000")
+            adapter = communicator.createObjectAdapterWithEndpoints("AuthenticationAdapter",
+                                                                    "default -h localhost -p 10000")
             proxy = adapter.add(servant, self.communicator().stringToIdentity('authentication'))
             adapter.addDefaultServant(servant, '')
             adapter.activate()

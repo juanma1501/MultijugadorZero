@@ -1,21 +1,25 @@
 #!/usr/bin/env python
+"""Clase maps_server"""
 
 import sys
 import logging
 import json
-import Ice
 import os
+import Ice
 
 Ice.loadSlice('icegauntlet.ice')
+# pylint: disable=E0401
+# pylint: disable=C0413
 import IceGauntlet
 
-
+# pylint: disable=C0115
 class RoomManagerI(IceGauntlet.RoomManager):
     def __init__(self, auth_server):
         self.maps = []
         self.load_maps()
         self.auth_server = auth_server
 
+    # pylint: disable=W0613
     def publish(self, tkn, room_json, current=None):
         number = 0
         if self.auth_server.isValid(tkn):
@@ -24,6 +28,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
             else:
                 self.maps.append(json.loads(room_json))  # Lo metemos en la lista
                 # Lo incluimos en la carpeta Loaded_Maps
+                # pylint: disable=W0612
                 for i in os.listdir("./Loaded_Maps"):
                     number += 1
                 with open('./Loaded_Maps/' + str(number) + '.json', 'w') as file:
@@ -32,8 +37,10 @@ class RoomManagerI(IceGauntlet.RoomManager):
         else:
             raise IceGauntlet.Unauthorized()
 
+    # pylint: disable=W0613
+    # pylint: disable=C0116
     def remove(self, tkn, room_name, current=None):
-        i=0
+        i = 0
         if self.auth_server.isValid(tkn):
             if self.exist(room_name):
                 for map in self.maps:
@@ -51,11 +58,13 @@ class RoomManagerI(IceGauntlet.RoomManager):
         else:
             raise IceGauntlet.Unauthorized()
 
-    def rename(self):
+    # si luego no funciona, hay que quitar el static
+    @staticmethod
+    def rename():
         i = 0
         for map in os.listdir('./Loaded_Maps'):
             nombre_antiguo = './Loaded_Maps/' + str(map)
-            nombre_nuevo = './Loaded_Maps/' + str(i) +'.json'
+            nombre_nuevo = './Loaded_Maps/' + str(i) + '.json'
             os.rename(nombre_antiguo, nombre_nuevo)
             i += 1
 
@@ -67,6 +76,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
                 return encontrado
         return encontrado
 
+    # pylint: disable=C0116
     def load_maps(self):
         if len(os.listdir('./Loaded_Maps')) == 0:
             return
@@ -75,19 +85,24 @@ class RoomManagerI(IceGauntlet.RoomManager):
             with open('./Loaded_Maps/' + map) as json_file:
                 self.maps.append(json.load(json_file))
 
-    def shutdown(self, current):
+    # si no funciona, hay que quitar el static
+    @staticmethod
+    def shutdown(current):
         current.adapter.getCommunicator().shutdown()
 
-
+#pylint: disable=R0903
+# pylint: disable=C0115
 class DungeonI(IceGauntlet.Dungeon):
     def __init__(self, maps):
         self.maps = maps
 
+    # pylint: disable=W0613
     def getRoom(self, current=None):
         return json.dumps(self.maps)
 
 
 # Vamos a crear un servidor con dos sirvientes, para el de mapas y para el de juego
+# pylint: disable=C0115
 class Server(Ice.Application):
     def run(self, args):
         with Ice.initialize(sys.argv) as communicator:

@@ -6,8 +6,7 @@ Script to run authentication user
 
 import os
 import sys
-
-import proc as proc
+# Si falla importar esto --> import proc as proc
 
 try:
     import pexpect
@@ -44,5 +43,3 @@ try:
     proc.expect([pexpect.EOF], timeout=None)
 except KeyboardInterrupt:
     print()
-
-

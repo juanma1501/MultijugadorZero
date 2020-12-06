@@ -8,13 +8,12 @@
 
 import sys
 import atexit
-import logging
 import argparse
 import Ice
-
+# pylint: disable=E0401
+# pylint: disable=C0413
 Ice.loadSlice('../Implementación_Multijugador/icegauntlet.ice')
 import IceGauntlet
-import os
 import game
 import game.common
 import game.screens
@@ -53,15 +52,9 @@ def main():
     if not user_options:
         return BAD_COMMAND_LINE
 
-    '''
-    if len(sys.argv) < 2:
-        print('Command arguments: {} <proxy>'.format(
-            os.path.basename(sys.argv[0]))
-        )
-        sys.exit(1)
-    '''
-
     #Leemos el proxy de Dungeon desde el archivo proxy_juego
+    #Quitamos el error de pylint porque es una variable usada frecuentemente con ese nombre
+    #pylint: disable=C0103
     f = open('../Implementación_Multijugador/proxy_juego', 'r')
     proxy_juego = f.read()
     print(proxy_juego)

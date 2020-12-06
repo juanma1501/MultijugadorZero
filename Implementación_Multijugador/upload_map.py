@@ -1,9 +1,15 @@
 #!/usr/bin/env python
+'''
+Clase upload_map.py
+'''
 
+# pylint: disable=E1101
 import sys
-import Ice
 import json
+import Ice
 Ice.loadSlice('icegauntlet.ice')
+# pylint: disable=E0401
+# pylint: disable=C0413
 import IceGauntlet
 
 if len(sys.argv) < 4:
@@ -13,6 +19,7 @@ if len(sys.argv) < 4:
 with Ice.initialize(sys.argv) as communicator:
 
     try:
+        # pylint: disable=C0301
         proxy_maps_server = IceGauntlet.RoomManagerPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
     except Ice.NoEndpointException:
         print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
@@ -29,12 +36,15 @@ with Ice.initialize(sys.argv) as communicator:
             mapa = json.load(json_file)
     except FileNotFoundError:
         print("ERROR. No se pudo encontrar el archivo .json")
-        sys.exit(0)
+        sys.exit(1)
 
     try:
         proxy_maps_server.publish(sys.argv[2], json.dumps(mapa))
     except IceGauntlet.Unauthorized:
         print("El token introducido es incorrecto.")
+        sys.exit(1)
+    except IceGauntlet.RoomAlreadyExists:
+        print("El mapa que intenta publicar ya existe.")
         sys.exit(1)
     except IceGauntlet.WrongRoomFormat:
         print("El formato del JSON no es valido")
