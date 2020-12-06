@@ -53,31 +53,21 @@ def main():
     if not user_options:
         return BAD_COMMAND_LINE
 
-    #Leemos el proxy de Dungeon desde el archivo proxy_juego
-    #Quitamos el error de pylint porque es una variable usada frecuentemente con ese nombre
-    #pylint: disable=C0103
-    '''
-    f = open('../Implementación_Multijugador/proxy_juego', 'r')
-    proxy_juego = f.read()
-    print(proxy_juego)
-    f.close()
-    '''
-    while(True):
-        game.pyxeltools.initialize()
-        communicator = Ice.initialize(sys.argv)
-        game_ = IceGauntlet.DungeonPrx.checkedCast(communicator.stringToProxy(user_options.PROXY))
-        try:
-            dungeon = RemoteDungeon(game_)
-        except IceGauntlet.RoomNotExists:
-            print("ERROR. No hay mapas subidos para jugar.")
-            sys.exit(1)
-        gauntlet = game.Game(user_options.hero, dungeon)
-        gauntlet.add_state(game.screens.TileScreen, game.common.INITIAL_SCREEN)
-        gauntlet.add_state(game.screens.StatsScreen, game.common.STATUS_SCREEN)
-        gauntlet.add_state(game.screens.GameScreen, game.common.GAME_SCREEN)
-        gauntlet.add_state(game.screens.GameOverScreen, game.common.GAME_OVER_SCREEN)
-        gauntlet.add_state(game.screens.GoodEndScreen, game.common.GOOD_END_SCREEN)
-        gauntlet.start()
+    game.pyxeltools.initialize()
+    communicator = Ice.initialize(sys.argv)
+    game_ = IceGauntlet.DungeonPrx.checkedCast(communicator.stringToProxy(user_options.PROXY))
+    try:
+        dungeon = RemoteDungeon(game_)
+    except IceGauntlet.RoomNotExists:
+        print("ERROR. No hay mapas subidos para jugar.")
+        sys.exit(1)
+    gauntlet = game.Game(user_options.hero, dungeon)
+    gauntlet.add_state(game.screens.TileScreen, game.common.INITIAL_SCREEN)
+    gauntlet.add_state(game.screens.StatsScreen, game.common.STATUS_SCREEN)
+    gauntlet.add_state(game.screens.GameScreen, game.common.GAME_SCREEN)
+    gauntlet.add_state(game.screens.GameOverScreen, game.common.GAME_OVER_SCREEN)
+    gauntlet.add_state(game.screens.GoodEndScreen, game.common.GOOD_END_SCREEN)
+    gauntlet.start()
 
     return EXIT_OK
 
