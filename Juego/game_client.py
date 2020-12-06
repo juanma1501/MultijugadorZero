@@ -39,7 +39,6 @@ def bye(*args, **kwargs):
 def parse_commandline():
     '''Parse and check commandline'''
     parser = argparse.ArgumentParser('IceDungeon Remote Game')
-    parser.add_argument('PROXY', help='Proxy', type=str)
     parser.add_argument(
         '-p', '--player', default=DEFAULT_HERO, choices=game.common.HEROES,
         dest='hero', help='Hero to play with'
@@ -54,18 +53,25 @@ def main():
     if not user_options:
         return BAD_COMMAND_LINE
 
-
+    '''
     if len(sys.argv) < 2:
         print('Command arguments: {} <proxy>'.format(
             os.path.basename(sys.argv[0]))
         )
         sys.exit(1)
+    '''
+
+    #Leemos el proxy de Dungeon desde el archivo proxy_juego
+    f = open('../Implementación_Multijugador/proxy_juego', 'r')
+    proxy_juego = f.read()
+    print(proxy_juego)
+    f.close()
 
     game.pyxeltools.initialize()
     communicator = Ice.initialize(sys.argv)
-    maps_proxy = IceGauntlet.DungeonPrx.checkedCast(communicator.stringToProxy(user_options.PROXY))
-    dungeon = RemoteDungeon(maps_proxy)
-    gauntlet = game.Game(user_options, dungeon)
+    game_ = IceGauntlet.DungeonPrx.checkedCast(communicator.stringToProxy(proxy_juego))
+    dungeon = RemoteDungeon(game_)
+    gauntlet = game.Game(user_options.hero, dungeon)
     gauntlet.add_state(game.screens.TileScreen, game.common.INITIAL_SCREEN)
     gauntlet.add_state(game.screens.StatsScreen, game.common.STATUS_SCREEN)
     gauntlet.add_state(game.screens.GameScreen, game.common.GAME_SCREEN)

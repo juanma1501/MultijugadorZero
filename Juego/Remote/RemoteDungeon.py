@@ -1,16 +1,17 @@
 import json
+import os
 
 class RemoteDungeon:
     '''Store a list of rooms'''
 
-    def __init__(self, maps_proxy):
-        self.maps_proxy = maps_proxy
-        rooms = json.loads(maps_proxy.getRoom())
+    def __init__(self, game_proxy):
         self._levels_ = []
-        for i in range(len(rooms)):
-            self._levels_.append('data' + str(i) + '.json')
-            with open('../assets/' + str(i) + '.json', 'w') as f:
-                json.dump(rooms[i], f)
+        self.game_proxy = game_proxy
+        maps = json.loads(self.game_proxy.getRoom())
+        for i in range(len(maps)):
+            self._levels_.append(str(i) + '.json')
+            with open('./assets/' + str(i) + '.json', 'w') as f:
+                json.dump(maps[i], f)
         self._levels_.reverse()
 
     @property

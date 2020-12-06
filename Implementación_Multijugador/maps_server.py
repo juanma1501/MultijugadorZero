@@ -104,16 +104,16 @@ class Server(Ice.Application):
             adapter.activate()
 
             # Proxy del servicio de juego
-            servant = RoomManagerI(servant.maps)
+            servant_game = DungeonI(servant.maps)
             adapter_game = communicator.createObjectAdapterWithEndpoints("DungeonAdapter",
                                                                          "default -h localhost -p 10002")
-            proxy_game = adapter_game.add(servant, self.communicator().stringToIdentity('dungeon'))
-            adapter_game.addDefaultServant(servant, '')
+            proxy_game = adapter_game.add(servant_game, self.communicator().stringToIdentity('dungeon'))
+            adapter_game.addDefaultServant(servant_game, '')
             adapter_game.activate()
 
             # Vamos a escribir el proxy de juego en el txt, ya que este servidor solo puede imprimir uno
             txt = open('proxy_juego', 'w')
-            txt.write("\"" + str(proxy_game) + "\"")
+            txt.write(str(proxy_game))
             txt.close()
 
             logging.debug('Adapter ready, servant proxy: {}'.format(proxy))
