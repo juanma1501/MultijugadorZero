@@ -1,2 +1,9 @@
 # MultijugadorZero
-Práctica de la asignatura Sistemas Distribuidos, que consiste en realizar el multijugador de un juego.
+
+Project URL: https://github.com/juanma1501/MultijugadorZero
+
+Juan Manuel Porrero Almansa: juanmanuel.porrero@alu.uclm.es 
+
+José Carlos Gualo Cejudo: josecarlos.gualo@alu.uclm.es 
+
+Ernesto Plata Fernández: ernesto.plata@alu.uclm.es
