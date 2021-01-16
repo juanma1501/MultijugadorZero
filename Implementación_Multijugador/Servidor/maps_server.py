@@ -5,6 +5,8 @@ import sys
 import logging
 import json
 import os
+from sys import excepthook
+
 import Ice
 
 Ice.loadSlice('icegauntlet.ice')
@@ -24,7 +26,9 @@ class RoomManagerI(IceGauntlet.RoomManager):
         number = 0
         json_map = json.loads(room_json)
         if self.check(json_map):
-            if self.auth_server.isValid(tkn):
+            try:
+                usuario = self.auth_server.getOwner(tkn)
+
                 if json_map in self.maps:
                     raise IceGauntlet.RoomAlreadyExists()
                 else:
@@ -35,7 +39,8 @@ class RoomManagerI(IceGauntlet.RoomManager):
                         number += 1
                     with open('./Loaded_Maps/' + str(number) + '.json', 'w') as file:
                         json.dump(json_map, file)
-            else:
+            except IceGauntlet.Unauthorized():
+                print("No se ha recuperado ningun token")
                 raise IceGauntlet.Unauthorized()
         else:
             raise IceGauntlet.WrongRoomFormat()
@@ -49,7 +54,9 @@ class RoomManagerI(IceGauntlet.RoomManager):
     # pylint: disable=C0116
     def remove(self, tkn, room_name, current=None):
         i = 0
-        if self.auth_server.isValid(tkn):
+        try:
+            usuario = self.auth_server.getOwner(tkn)
+
             if self.exist(room_name):
                 for map in self.maps:
                     if map['room'] == room_name:
@@ -59,7 +66,9 @@ class RoomManagerI(IceGauntlet.RoomManager):
                     i += 1
             else:
                 raise IceGauntlet.RoomNotExists()
-        else:
+
+        except IceGauntlet.Unauthorized():
+            print("No se ha recuperado ningun token")
             raise IceGauntlet.Unauthorized()
 
     # si luego no funciona, hay que quitar el static
