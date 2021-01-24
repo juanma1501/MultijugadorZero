@@ -6,17 +6,36 @@ import logging
 import json
 import os
 from sys import excepthook
-
+import IceStorm
+import uuid
 import Ice
 
 Ice.loadSlice('icegauntlet.ice')
 # pylint: disable=E0401
 # pylint: disable=C0413
 import IceGauntlet
+'''
+
+# pylint: disable=C0115
+class RoomManagerSyncI(IceGauntlet.RoomManagerSync):
+
+
+    def __init__(self):
+
+    def hello(self, manager, managerId, current=None):
+
+    def announce(self, manager, managerId, current=None):
+
+    def newRoom(self, roomName, managerId, current=None):
+
+    def removedRoom(self, roomName, current=None):
+'''
+
 
 # pylint: disable=C0115
 class RoomManagerI(IceGauntlet.RoomManager):
-    def __init__(self, auth_server):
+    def __init__(self, auth_server, id):
+        self.id = id
         self.maps = []
         self.load_maps()
         self.auth_server = auth_server
@@ -124,16 +143,17 @@ class Server(Ice.Application):
 
         logging.debug('Initializing server...')
 
-        proxyAuth = self.communicator().propertyToProxy("Auth")
-        prx_auth = IceGauntlet.AuthenticationPrx.checkedCast(proxyAuth)
+        propertyAuthorization = self.communicator().propertyToProxy("authorization")
+        authorizationProxy = IceGauntlet.AuthenticationPrx.checkedCast(propertyAuthorization)
         # Proxy del servicio de mapas
         #prx_auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
-        servant = RoomManagerI(prx_auth)
+        roomManager = RoomManagerI(authorizationProxy, uuid.uuid4().hex)
 
         adapter = self.communicator().createObjectAdapter("RoomManagerAdapter")
-        proxy = adapter.add(servant, self.communicator().stringToIdentity('roommanager'))
-        adapter.addDefaultServant(servant, '')
-        adapter.activate()
+        identityRoomManager = self.communicator().stringToIdentity(self.communicator().getProperties().getProperty('proxyIndex'))
+        roomManagerPrx = adapter.add(roomManager, identityRoomManager)
+        adapter.addDefaultServant(roomManager, '')
+        
 
         # Proxy del servicio de juego
         #servant_game = DungeonI(servant.maps)
@@ -146,9 +166,9 @@ class Server(Ice.Application):
         #txt = open('proxy_juego.txt', 'w')
         #txt.write(str(proxy_game))
         #txt.close()
-
-        logging.debug('Adapter ready, servant proxy: {}'.format(proxy))
-        print('"{}"'.format(proxy), flush=True)
+        adapter.activate()
+        logging.debug('Adapter ready, servant proxy: {}'.format(roomManagerPrx))
+        print(roomManager.id + ' "{}"'.format(roomManagerPrx), flush=True)
 
         logging.debug('Entering server loop...')
         self.shutdownOnInterrupt()

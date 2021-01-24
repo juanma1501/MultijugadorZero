@@ -104,7 +104,7 @@ class AuthenticationI(IceGauntlet.Authentication):
         '''Return if token is active'''
         if token in self._active_tokens_:
             for user in self._users_:
-                if user[CURRENT_TOKEN].get(CURRENT_TOKEN, None) == token:
+                if self._users_[user].get(CURRENT_TOKEN, None) == token:
                     return user
         # return token in self._active_tokens_
         raise IceGauntlet.Unauthorized()

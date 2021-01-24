@@ -42,7 +42,7 @@
          </service>
       </service-template>
       <server-template id="AuthorizationTemplate">
-         <server id="Authorization" activation="manual" exe="./auth_server" pwd="/home/ubuntu/Documentos/Nueva/Inicio/Multijugador_SSDD/Implementación_Multijugador/Servidor/src">
+         <server id="Authorization" activation="manual" exe="./auth_server" pwd="/home/ubuntu/PycharmProjects/L2/Implementación_Multijugador/Servidor">
             <properties>
             </properties>
             <adapter name="AuthenticationAdapter" endpoints="tcp" id="${server}.AuthenticationAdapter">
@@ -102,12 +102,13 @@
       </server-template>
       <server-template id="RoomManagerTemplate">
          <parameter name="index"/>
-         <server id="RoomManager" activation="manual" exe="./maps_server.py" pwd="/home/ubuntu/Documentos/Nueva/Inicio/Multijugador_SSDD/Implementación_Multijugador/Servidor/src">
+         <server id="RoomManager${index}" activation="manual" exe="./maps_server.py" pwd="/home/ubuntu/PycharmProjects/L2/Implementación_Multijugador/Servidor">
             <properties>
-               <property name="Auth" value="authentication"/>
+               <property name="proxyIndex" value="map${index}"/>
+               <property name="authorization" value="authentication"/>
             </properties>
             <adapter name="RoomManagerAdapter" endpoints="tcp" id="${server}.RoomManagerAdapter">
-               <object identity="map${index}" type="::IceGauntlet::RoomManager" property="roommanager"/>
+               <object identity="map${index}" property="roommanager${index}"/>
             </adapter>
          </server>
       </server-template>
@@ -118,14 +119,7 @@
          <server-instance template="RoomManagerTemplate" index="1"/>
       </node>
       <node name="node2">
-         <server id="MapsServer" activation="manual" exe="./map_server.py" pwd="/home/medina/SSDD2021/practica icegridgui/Practica/nuevaPractica/Servidor/src">
-            <properties>
-               <property name="Auth" value="authentication"/>
-            </properties>
-            <adapter name="MapsAdapter" endpoints="tcp" id="${server}.MapsAdapter">
-               <object identity="maps0" type="::IceGauntlet::RoomManager" property="roommanager"/>
-            </adapter>
-         </server>
+         <server-instance template="RoomManagerTemplate" index="2"/>
       </node>
    </application>
 </icegrid>
