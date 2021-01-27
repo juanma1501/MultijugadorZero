@@ -14,17 +14,37 @@ Ice.loadSlice('icegauntlet.ice')
 # pylint: disable=E0401
 # pylint: disable=C0413
 import IceGauntlet
-'''
+
 
 # pylint: disable=C0115
 class RoomManagerSyncI(IceGauntlet.RoomManagerSync):
+    def __init__(self, syncChannelPrx, roomManager, roomManagerPrx):
+        self.syncChannelPrx = syncChannelPrx
+        self.roomManager = roomManager
+        self.clientRoomManagerPrx = IceGauntlet.RoomManagerPrx.checkedCast(roomManagerPrx)
+        self.roomsProxies = {}
+
+    def start(self):
+        # hello 
+        self.createClient().hello(self.clientRoomManagerPrx, self.roomManager.id)  
+
+    def hello(self, newRoom, idRoom, current=None):
+        self.roomsProxies[idRoom] = newRoom
+        self.createClient().announce(self.clientRoomManagerPrx, self.roomManager.id)  
+        print(self.roomManager.id + ' : hello => ' + idRoom)
+        print(self.roomsProxies)
+
+    def createClient(self):
+        return IceGauntlet.RoomManagerSyncPrx.uncheckedCast(self.syncChannelPrx.getPublisher())
 
 
-    def __init__(self):
+    def announce(self, newRoom, idRoom, current=None):
+        if not(idRoom in self.roomsProxies):
+            self.roomsProxies[idRoom] = newRoom
+        print(self.roomManager.id + ' : announce => ' + idRoom)
+        print(self.roomsProxies)
 
-    def hello(self, manager, managerId, current=None):
-
-    def announce(self, manager, managerId, current=None):
+'''
 
     def newRoom(self, roomName, managerId, current=None):
 
@@ -153,7 +173,25 @@ class Server(Ice.Application):
         identityRoomManager = self.communicator().stringToIdentity(self.communicator().getProperties().getProperty('proxyIndex'))
         roomManagerPrx = adapter.add(roomManager, identityRoomManager)
         adapter.addDefaultServant(roomManager, '')
-        
+
+        # Ice Storm
+        proxyIceBox = self.communicator().stringToProxy('Multijugador_SSDD.IceStorm/TopicManager')
+        if proxyIceBox is None:
+            print("Invalid topic proxy")
+            return 2
+
+        topicPrx = IceStorm.TopicManagerPrx.checkedCast(proxyIceBox)
+        print("Icebox ready")
+
+        try:
+            topicRoomSyncPrx = topicPrx.retrieve("RoomManagerSyncChannel")
+        except IceStorm.NoSuchTopic:
+            topicRoomSyncPrx = topicPrx.create("RoomManagerSyncChannel")
+        print("Created RoomManagerSyncChannel")
+
+        roomManagerSync = RoomManagerSyncI(topicRoomSyncPrx, roomManager, roomManagerPrx)
+        roomManagerSyncPrx = adapter.addWithUUID(roomManagerSync)
+        topicRoomSyncPrx.subscribeAndGetPublisher(dict(),roomManagerSyncPrx)
 
         # Proxy del servicio de juego
         #servant_game = DungeonI(servant.maps)
@@ -167,6 +205,10 @@ class Server(Ice.Application):
         #txt.write(str(proxy_game))
         #txt.close()
         adapter.activate()
+
+        # Cliente del topic ejecuta hello
+        roomManagerSync.start()
+
         logging.debug('Adapter ready, servant proxy: {}'.format(roomManagerPrx))
         print(roomManager.id + ' "{}"'.format(roomManagerPrx), flush=True)
 
