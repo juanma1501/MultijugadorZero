@@ -25,7 +25,6 @@ class RoomManagerSyncI(IceGauntlet.RoomManagerSync):
         self.roomsProxies = {}
 
     def start(self):
-        # hello 
         self.createClient().hello(self.clientRoomManagerPrx, self.roomManager.id)  
 
     def hello(self, newRoom, idRoom, current=None):
@@ -37,28 +36,37 @@ class RoomManagerSyncI(IceGauntlet.RoomManagerSync):
     def createClient(self):
         return IceGauntlet.RoomManagerSyncPrx.uncheckedCast(self.syncChannelPrx.getPublisher())
 
-
     def announce(self, newRoom, idRoom, current=None):
         if not(idRoom in self.roomsProxies):
             self.roomsProxies[idRoom] = newRoom
         print(self.roomManager.id + ' : announce => ' + idRoom)
         print(self.roomsProxies)
 
-'''
-
-    def newRoom(self, roomName, managerId, current=None):
+    def newRoom(self, roomName, idRoomManager, current=None):
+        if idRoomManager in self.roomsProxies:
+            strRoomsOfManager = self.roomsProxies[idRoomManager].availableRooms()
+            for mapRoom in json.loads(strRoomsOfManager):
+                if(mapRoom['room'] == roomName):
+                    self.roomManager.maps.append(mapRoom)
 
     def removedRoom(self, roomName, current=None):
-'''
+        for mapRoom in self.roomManager.maps:
+            if(mapRoom['room'] == roomName):
+                self.roomManager.maps.remove(mapRoom)
 
 
 # pylint: disable=C0115
 class RoomManagerI(IceGauntlet.RoomManager):
     def __init__(self, auth_server, id):
         self.id = id
+        self.roomManagerSync = None
         self.maps = []
         self.load_maps()
         self.auth_server = auth_server
+
+    # pylint: disable=W0613
+    def availableRooms(self, current=None):
+        return json.dumps(self.maps)
 
     # pylint: disable=W0613
     def publish(self, tkn, room_json, current=None):
@@ -72,6 +80,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
                     raise IceGauntlet.RoomAlreadyExists()
                 else:
                     self.maps.append(json_map)  # Lo metemos en la lista
+                    self.syncServers(True, json.dumps(json_map))
                     # Lo incluimos en la carpeta Loaded_Maps
                     # pylint: disable=W0612
                     for i in os.listdir("./Loaded_Maps"):
@@ -83,6 +92,13 @@ class RoomManagerI(IceGauntlet.RoomManager):
                 raise IceGauntlet.Unauthorized()
         else:
             raise IceGauntlet.WrongRoomFormat()
+
+    def syncServers(upload, data):
+        if upload and self.roomManagerSync:
+            self.roomManagerSync.createClient().newRoom(data, self.id)
+        elif not(upload) and self.roomManagerSync:
+            self.roomManagerSync.createClient().removeRoom(data, self.id)
+
 
     def check(self, json_map):
         if 'data' in json_map and 'room' in json_map:
@@ -100,6 +116,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
                 for map in self.maps:
                     if map['room'] == room_name:
                         self.maps.remove(map)
+                        self.syncServers(False, room_name)
                         os.remove('./Loaded_Maps/' + str(i) + '.json')
                         self.rename()
                     i += 1
@@ -190,6 +207,7 @@ class Server(Ice.Application):
         print("Created RoomManagerSyncChannel")
 
         roomManagerSync = RoomManagerSyncI(topicRoomSyncPrx, roomManager, roomManagerPrx)
+        roomManager.roomManagerSync = roomManagerSync
         roomManagerSyncPrx = adapter.addWithUUID(roomManagerSync)
         topicRoomSyncPrx.subscribeAndGetPublisher(dict(),roomManagerSyncPrx)
 
