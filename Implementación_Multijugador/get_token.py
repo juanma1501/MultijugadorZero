@@ -43,7 +43,7 @@ def main():
             print("El usuario o la contraseña introducidos son incorrectos.")
             sys.exit(1)
 
-        print("El token es : " + str(tkn))
+        print("El token es : " + tkn)
 
 
 if __name__ == '__main__':

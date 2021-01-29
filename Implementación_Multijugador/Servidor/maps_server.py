@@ -43,17 +43,25 @@ class RoomManagerSyncI(IceGauntlet.RoomManagerSync):
         print(self.roomsProxies)
 
     def newRoom(self, roomName, idRoomManager, current=None):
-        if idRoomManager in self.roomsProxies:
-            strRoomsOfManager = self.roomsProxies[idRoomManager].availableRooms()
-            for mapRoom in json.loads(strRoomsOfManager):
-                if(mapRoom['room'] == roomName):
-                    self.roomManager.maps.append(mapRoom)
+        strRoomsOfManager = self.roomsProxies[idRoomManager].availableRooms()
+        for mapRoom in strRoomsOfManager:
+            mapRoom = json.loads(mapRoom)
+            if(mapRoom['room'] == roomName and not(mapRoom in self.roomManager.maps)):
+                self.roomManager.maps.append(mapRoom)
+        print(self.roomManager.id + ' : newRoom')
+        self.printMaps()
 
     def removedRoom(self, roomName, current=None):
         for mapRoom in self.roomManager.maps:
             if(mapRoom['room'] == roomName):
                 self.roomManager.maps.remove(mapRoom)
+        print(self.roomManager.id + ' : removedRoom')
+        self.printMaps()
 
+    def printMaps(self):
+        for map in self.roomManager.maps:
+            print(map['room'])
+        print('\n')
 
 # pylint: disable=C0115
 class RoomManagerI(IceGauntlet.RoomManager):
@@ -66,7 +74,10 @@ class RoomManagerI(IceGauntlet.RoomManager):
 
     # pylint: disable=W0613
     def availableRooms(self, current=None):
-        return json.dumps(self.maps)
+        maps_string = []
+        for map in self.maps:
+            maps_string.append(json.dumps(map))
+        return maps_string
 
     # pylint: disable=W0613
     def publish(self, tkn, room_json, current=None):
@@ -76,28 +87,29 @@ class RoomManagerI(IceGauntlet.RoomManager):
             try:
                 usuario = self.auth_server.getOwner(tkn)
 
-                if json_map in self.maps:
-                    raise IceGauntlet.RoomAlreadyExists()
-                else:
-                    self.maps.append(json_map)  # Lo metemos en la lista
-                    self.syncServers(True, json.dumps(json_map))
-                    # Lo incluimos en la carpeta Loaded_Maps
-                    # pylint: disable=W0612
-                    for i in os.listdir("./Loaded_Maps"):
-                        number += 1
-                    with open('./Loaded_Maps/' + str(number) + '.json', 'w') as file:
-                        json.dump(json_map, file)
             except IceGauntlet.Unauthorized():
                 print("No se ha recuperado ningun token")
                 raise IceGauntlet.Unauthorized()
+
+            if json_map in self.maps:
+                raise IceGauntlet.RoomAlreadyExists()
+            else:
+                self.maps.append(json_map)  # Lo metemos en la lista
+                self.syncServers(True, json_map['room'])
+                # Lo incluimos en la carpeta Loaded_Maps
+                # pylint: disable=W0612
+                for i in os.listdir("./Loaded_Maps"):
+                    number += 1
+                with open('./Loaded_Maps/' + str(number) + '.json', 'w') as file:
+                    json.dump(json_map, file)
         else:
             raise IceGauntlet.WrongRoomFormat()
 
-    def syncServers(upload, data):
+    def syncServers(self, upload, data):
         if upload and self.roomManagerSync:
             self.roomManagerSync.createClient().newRoom(data, self.id)
         elif not(upload) and self.roomManagerSync:
-            self.roomManagerSync.createClient().removeRoom(data, self.id)
+            self.roomManagerSync.createClient().removedRoom(data)
 
 
     def check(self, json_map):
@@ -111,21 +123,22 @@ class RoomManagerI(IceGauntlet.RoomManager):
         i = 0
         try:
             usuario = self.auth_server.getOwner(tkn)
-
-            if self.exist(room_name):
-                for map in self.maps:
-                    if map['room'] == room_name:
-                        self.maps.remove(map)
-                        self.syncServers(False, room_name)
-                        os.remove('./Loaded_Maps/' + str(i) + '.json')
-                        self.rename()
-                    i += 1
-            else:
-                raise IceGauntlet.RoomNotExists()
-
         except IceGauntlet.Unauthorized():
             print("No se ha recuperado ningun token")
             raise IceGauntlet.Unauthorized()
+
+        if self.exist(room_name):
+            for map in self.maps:
+                if map['room'] == room_name:
+                    self.maps.remove(map)
+                    self.syncServers(False, room_name)
+                    os.remove('./Loaded_Maps/' + str(i) + '.json')
+                    self.rename()
+                i += 1
+        else:
+            raise IceGauntlet.RoomNotExists()
+
+        
 
     # si luego no funciona, hay que quitar el static
     @staticmethod

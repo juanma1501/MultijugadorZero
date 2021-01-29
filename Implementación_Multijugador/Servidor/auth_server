@@ -76,6 +76,7 @@ class AuthenticationI(IceGauntlet.Authentication):
 
     def getNewToken(self, user, password_hash, current=None):
         '''Create new auth token'''
+        print('ENTRA A GET NEW TOKEN')
         logging.debug(f'New token requested by {user}')
         if user not in self._users_:
             raise IceGauntlet.Unauthorized()
@@ -99,6 +100,8 @@ class AuthenticationI(IceGauntlet.Authentication):
         self._users_[user][CURRENT_TOKEN] = new_token
         self.__commit__()
         self._active_tokens_.add(new_token)
+        
+        return new_token
 
     def getOwner(self, token, current=None):
         '''Return if token is active'''
@@ -106,7 +109,6 @@ class AuthenticationI(IceGauntlet.Authentication):
             for user in self._users_:
                 if self._users_[user].get(CURRENT_TOKEN, None) == token:
                     return user
-        # return token in self._active_tokens_
         raise IceGauntlet.Unauthorized()
 
 
