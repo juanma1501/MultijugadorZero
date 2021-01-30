@@ -33,7 +33,7 @@ def main():
             sys.exit(1)
 
         try:
-            with open('Maps/' + sys.argv[3]) as json_file:
+            with open(sys.argv[3]) as json_file:
                 mapa = json.load(json_file)
         except FileNotFoundError:
             print("ERROR. No se pudo encontrar el archivo .json")

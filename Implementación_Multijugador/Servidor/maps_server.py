@@ -128,7 +128,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
             try:
                 usuario = self.auth_server.getOwner(tkn)
 
-            except IceGauntlet.Unauthorized():
+            except IceGauntlet.Unauthorized:
                 #print("No se ha recuperado ningun token")
                 raise IceGauntlet.Unauthorized()
 
@@ -159,7 +159,7 @@ class RoomManagerI(IceGauntlet.RoomManager):
         i = 0
         try:
             usuario = self.auth_server.getOwner(tkn)
-        except IceGauntlet.Unauthorized():
+        except IceGauntlet.Unauthorized:
             #print("No se ha recuperado ningun token")
             raise IceGauntlet.Unauthorized()
 
