@@ -42,7 +42,7 @@
          </service>
       </service-template>
       <server-template id="AuthorizationTemplate">
-         <server id="Authorization" activation="manual" exe="./auth_server" pwd="/home/ubuntu/PycharmProjects/MultijugadorZero/Implementación_Multijugador/Servidor">
+         <server id="Authorization" activation="manual" exe="./auth_server" pwd="/tmp/db/Multijugador_SSDD/">
             <properties>
             </properties>
             <adapter name="AuthenticationAdapter" endpoints="tcp" id="${server}.AuthenticationAdapter">
@@ -102,7 +102,7 @@
       </server-template>
       <server-template id="RoomManagerTemplate">
          <parameter name="index"/>
-         <server id="RoomManager${index}" activation="manual" exe="./maps_server.py" pwd="/home/ubuntu/PycharmProjects/MultijugadorZero/Implementación_Multijugador/Servidor">
+         <server id="RoomManager${index}" activation="manual" exe="./maps_server.py" pwd="/tmp/db/Multijugador_SSDD/">
             <properties>
                <property name="proxyIndex" value="map${index}"/>
                <property name="authorization" value="authentication"/>
@@ -120,6 +120,7 @@
       </node>
       <node name="node2">
          <server-instance template="RoomManagerTemplate" index="2"/>
+         <server-instance template="RoomManagerTemplate" index="3"/>
       </node>
    </application>
 </icegrid>
