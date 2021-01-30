@@ -50,6 +50,7 @@ class AuthenticationI(IceGauntlet.Authentication):
         logging.debug('Reloading user database')
         with open(USERS_FILE, 'r') as contents:
             self._users_ = json.load(contents)
+        # pylint: disable=R1718
         self._active_tokens_ = set([
             user.get(CURRENT_TOKEN, None) for user in self._users_.values()
         ])
@@ -59,6 +60,7 @@ class AuthenticationI(IceGauntlet.Authentication):
         with open(USERS_FILE, 'w') as contents:
             json.dump(self._users_, contents, indent=4, sort_keys=True)
 
+    # pylint: disable=C0103
     def changePassword(self, user, current_pass_hash, new_pass_hash, current=None):
         '''Set/Change user password'''
         logging.debug(f'Change password requested by {user}')
@@ -74,6 +76,7 @@ class AuthenticationI(IceGauntlet.Authentication):
         self._users_[user][PASSWORD_HASH] = new_pass_hash
         self.__commit__()
 
+    # pylint: disable=C0103
     def getNewToken(self, user, password_hash, current=None):
         '''Create new auth token'''
         print('ENTRA A GET NEW TOKEN')
@@ -100,9 +103,9 @@ class AuthenticationI(IceGauntlet.Authentication):
         self._users_[user][CURRENT_TOKEN] = new_token
         self.__commit__()
         self._active_tokens_.add(new_token)
-        
         return new_token
 
+    # pylint: disable=C0103
     def getOwner(self, token, current=None):
         '''Return if token is active'''
         if token in self._active_tokens_:
@@ -129,6 +132,7 @@ class Server(Ice.Application):
         proxy = adapter.add(servant, self.communicator().stringToIdentity('authentication'))
         adapter.addDefaultServant(servant, '')
         adapter.activate()
+        # pylint: disable=W1202
         logging.debug('Adapter ready, servant proxy: {}'.format(proxy))
         print('"{}"'.format(proxy), flush=True)
 

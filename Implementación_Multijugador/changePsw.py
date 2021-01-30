@@ -1,4 +1,8 @@
+# pylint: disable=C0103
 #!/usr/bin/env python
+'''
+Clase changePsw.py
+'''
 
 import hashlib
 import sys
@@ -10,7 +14,7 @@ Ice.loadSlice('icegauntlet.ice')
 # pylint: disable=C0413
 import IceGauntlet
 
-
+# pylint: disable=C0116
 def main():
     # Recibiremos por parámetro un proxy, y pediremos usuario y contraseña por teclado
     if len(sys.argv) < 2:
@@ -18,20 +22,21 @@ def main():
         sys.exit(1)
 
     with Ice.initialize(sys.argv) as communicator:
+        # pylint: disable=C0301
         proxy_auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
 
         print("Introduce tu nombre de usuario:")
         usuario = input()  # Existe el usuario?
 
         print("Introduce la antigua contraseña:")
-        PSW_ANTIGUA = getpass()
-        PSW_ANTIGUA = hashlib.sha256(PSW_ANTIGUA.encode()).hexdigest()
+        psw_antigua = getpass()
+        psw_antigua = hashlib.sha256(psw_antigua.encode()).hexdigest()
 
         print("Introduce la contraseña nueva")
-        PSW_NUEVA = getpass()
-        PSW_NUEVA = hashlib.sha256(PSW_NUEVA.encode()).hexdigest()
+        psw_nueva = getpass()
+        psw_nueva = hashlib.sha256(psw_nueva.encode()).hexdigest()
         try:
-            proxy_auth.changePassword(str(usuario), PSW_ANTIGUA, PSW_NUEVA)
+            proxy_auth.changePassword(str(usuario), psw_antigua, psw_nueva)
             print("La contraseña se ha cambiado con éxito.")
         except IceGauntlet.Unauthorized:
             print("ERROR. Usuario o contraseña incorrectos.")
