@@ -8,6 +8,9 @@ import Ice
 Ice.loadSlice('icegauntlet.ice')
 # pylint: disable=E0401
 # pylint: disable=C0413
+# pylint: disable=E1101
+# pylint: disable=C0301
+# pylint: disable=C0103
 import IceGauntlet
 
 
@@ -18,7 +21,20 @@ def main():
         sys.exit(1)
 
     with Ice.initialize(sys.argv) as communicator:
-        proxy_auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
+        try:
+            proxy_auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
+        except Ice.NoEndpointException:
+            print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+            sys.exit(1)
+        except Ice.ConnectionRefusedException:
+            print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+            sys.exit(1)
+        except Ice.EndpointParseException:
+            print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+            sys.exit(1)
+        except Ice.NotRegisteredException:
+            print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+            sys.exit(1)
 
         print("Introduce tu nombre de usuario:")
         usuario = input()  # Existe el usuario?
@@ -35,6 +51,8 @@ def main():
             print("La contraseña se ha cambiado con éxito.")
         except IceGauntlet.Unauthorized:
             print("ERROR. Usuario o contraseña incorrectos.")
+
+        return 0
 
 
 if __name__ == '__main__':
