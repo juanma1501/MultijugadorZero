@@ -12,7 +12,7 @@ Ice.loadSlice('icegauntlet.ice')
 # pylint: disable=C0413
 import IceGauntlet
 
-
+# pylint: disable=C0116
 def main():
     if len(sys.argv) < 2:
         print("Hay que introducir el proxy")
@@ -21,6 +21,7 @@ def main():
     with Ice.initialize(sys.argv) as communicator:
 
         try:
+            # pylint: disable=C0301
             auth = IceGauntlet.AuthenticationPrx.checkedCast(communicator.stringToProxy(sys.argv[1]))
         except Ice.NoEndpointException:
             print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
@@ -37,11 +38,11 @@ def main():
 
         user = input("Introduce tu nombre de usuario: ")
 
-        PASSWORD = getpass()
-        PASSWORD = hashlib.sha256(PASSWORD.encode()).hexdigest()
+        password = getpass()
+        password = hashlib.sha256(password.encode()).hexdigest()
 
         try:
-            tkn = auth.getNewToken(user, PASSWORD)
+            tkn = auth.getNewToken(user, password)
         except IceGauntlet.Unauthorized:
             print("El usuario o la contraseña introducidos son incorrectos.")
             sys.exit(1)

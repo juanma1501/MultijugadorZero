@@ -12,6 +12,7 @@ Ice.loadSlice('icegauntlet.ice')
 # pylint: disable=C0413
 import IceGauntlet
 
+# pylint: disable=C0116
 def main():
     if len(sys.argv) < 4:
         print("Introduzca todos los argumentos. <proxy> <token> <nombre_archivo.json>")
