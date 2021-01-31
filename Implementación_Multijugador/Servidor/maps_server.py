@@ -256,7 +256,7 @@ class Server(Ice.Application):
         roomManagerSync.start()
 
         logging.debug('Adapter ready, servant proxy: {}'.format(roomManagerPrx))
-        #print(roomManager.id + ' "{}"'.format(roomManagerPrx), flush=True)
+        print(roomManager.id + ' "{}"'.format(roomManagerPrx), flush=True)
 
         logging.debug('Entering server loop...')
         self.shutdownOnInterrupt()

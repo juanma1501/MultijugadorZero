@@ -28,6 +28,10 @@ def main():
         except Ice.EndpointParseException:
             print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
             sys.exit(1)
+        except Ice.NotRegisteredException:
+            print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+            sys.exit(1)
+          
 
         try:
             proxy_maps_server.remove(sys.argv[2], sys.argv[3])
@@ -39,6 +43,8 @@ def main():
             sys.exit(1)
 
         print('El mapa se ha borrado con éxito.')
+
+        return 0
 
 
 if __name__ == '__main__':

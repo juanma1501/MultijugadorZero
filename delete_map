@@ -8,4 +8,4 @@ if [ $# -ne 3 ]; then
 fi
 
 cd ./Implementación_Multijugador/
-python3 remove_map.py --Ice.Config==./client.config  "$@"
+python3 remove_map.py --Ice.Config=./client.config  "$@"

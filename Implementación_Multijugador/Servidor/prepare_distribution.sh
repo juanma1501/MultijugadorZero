@@ -4,7 +4,6 @@ cp icegauntlet.ice /tmp/db/Multijugador_SSDD
 cp auth_server /tmp/db/Multijugador_SSDD
 cp maps_server.py /tmp/db/Multijugador_SSDD
 cp users.json /tmp/db/Multijugador_SSDD
-cp -r Loaded_Maps/ /tmp/db/Multijugador_SSDD
 mkdir -p /tmp/db/registry
 mkdir -p /tmp/db/node1
 mkdir -p /tmp/db/node2

@@ -18,7 +18,7 @@ except ImportError:
 os.chdir("./Implementación_Multijugador")
 
 # Define command to request new token
-_COMMAND_ = 'python3 get_token.py "%(auth_proxy)s"'
+_COMMAND_ = 'python3 get_token.py --Ice.Config=./client.config "%(auth_proxy)s"'
 
 # Message used by authentication client when asking for a password
 _PASSWORD_MESSAGE_ = 'Password:'

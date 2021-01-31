@@ -31,6 +31,9 @@ def main():
         except Ice.EndpointParseException:
             print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
             sys.exit(1)
+        except Ice.NotRegisteredException:
+            print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+            sys.exit(1)
 
         user = input("Introduce tu nombre de usuario: ")
 
@@ -44,6 +47,8 @@ def main():
             sys.exit(1)
 
         print("El token es : " + tkn)
+
+        return 0
 
 
 if __name__ == '__main__':

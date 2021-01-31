@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ./Implementación_Multijugador/Servidor
+
+./prepare_distribution.sh

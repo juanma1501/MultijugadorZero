@@ -31,6 +31,9 @@ def main():
         except Ice.EndpointParseException:
             print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
             sys.exit(1)
+        except Ice.NotRegisteredException:
+            print("ERROR. No se pudo leer el proxy. ¿Es correcto?")
+            sys.exit(1)
 
         try:
             with open(sys.argv[3]) as json_file:
@@ -52,6 +55,8 @@ def main():
             sys.exit(1)
 
         print("El mapa se ha subido con éxito.")
+
+        return 0
 
 
 if __name__ == '__main__':
